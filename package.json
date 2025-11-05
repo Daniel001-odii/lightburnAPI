@@ -12,7 +12,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@gradio/client": "^2.0.0-dev.1",
     "@neplex/vectorizer": "^0.0.5",
@@ -28,6 +27,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.10.0",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3"
   }
 }
