@@ -58,7 +58,7 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         // Vectorizer expects a file path or a buffer
         const svgString = await vectorize(inputBuffer, options);
 
-        const strokeSVG = convertFillsToStrokes(svgString, "#000000", 1);
+        const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
 
         res.set('Content-Type', 'image/svg+xml');
         res.send(strokeSVG);
@@ -88,7 +88,7 @@ export function convertFillsToStrokes(
     }
   
     // --- 2️⃣ Process remaining elements ---
-    /* const allElements = doc.getElementsByTagName("*");
+    const allElements = doc.getElementsByTagName("*");
     for (const el of Array.from(allElements)) {
       // Remove all fills
       if (el.hasAttribute("fill")) {
@@ -113,7 +113,7 @@ export function convertFillsToStrokes(
       el.setAttribute("stroke", strokeColor);
       el.setAttribute("stroke-width", strokeWidth.toString());
       el.setAttribute("fill", "none");
-    } */
+    }
   
     // --- 3️⃣ Optionally remove empty <defs> or <style> sections ---
     const defs = doc.getElementsByTagName("defs");
