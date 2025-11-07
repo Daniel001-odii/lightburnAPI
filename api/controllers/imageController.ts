@@ -50,10 +50,13 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
     try {
         const inputBuffer = req.file.buffer;
 
-        // conVERT TO GRAYSCALE FIRST
-        /* const grayBuffer = await sharp(inputBuffer)
-        .grayscale() // convert to grayscale
-        .toBuffer(); // return as buffer */
+        // Check if the uploaded file is an SVG
+        if (req.file.mimetype === 'image/svg+xml') {
+            const svgString = inputBuffer.toString('utf8');
+            const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
+            res.set('Content-Type', 'image/svg+xml');
+            return res.send(strokeSVG);
+        }
 
         // Vectorizer expects a file path or a buffer
         const svgString = await vectorize(inputBuffer, options);
