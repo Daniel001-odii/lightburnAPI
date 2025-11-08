@@ -53,7 +53,8 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         // Check if the uploaded file is an SVG
         if (req.file.mimetype === 'image/svg+xml') {
             const svgString = inputBuffer.toString('utf8');
-            const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
+            // const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
+            const strokeSVG = convertFillsToStrokes(svgString, "#000000", 16);
             res.set('Content-Type', 'image/svg+xml');
             return res.send(strokeSVG);
         }
@@ -61,10 +62,11 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         // Vectorizer expects a file path or a buffer
         const svgString = await vectorize(inputBuffer, options);
 
-        const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
+        // const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
 
         res.set('Content-Type', 'image/svg+xml');
-        res.send(strokeSVG);
+        res.send(svgString);
+        // res.status(200).json({ strokedSVG: strokeSVG, filledSVG: svgString })
     } catch (error) {
         console.error('Error converting image to SVG:', error);
         res.status(500).send('Error converting image to SVG.');
@@ -126,4 +128,29 @@ export function convertFillsToStrokes(
   
     const serializer = new XMLSerializer();
     return serializer.serializeToString(doc);
+  }
+
+
+  export const SVGPathToStroke = async (req: Request, res: Response) =>{
+    const { svgString } = req.body;
+    if(!svgString){
+      return res.status(400).json({ message: "svgString is required "})
+    }
+
+   
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgString, "image/svg+xml");
+  
+    // --- 1️⃣ Remove the first <path> element (bounding box or background) ---
+    const paths = doc.getElementsByTagName("path");
+    if (paths.length > 0) {
+      const firstPath = paths.item(0);
+      firstPath?.parentNode?.removeChild(firstPath);
+    }
+
+    const svgStroke = convertFillsToStrokes(svgString, "#000000", 3);
+
+    res.set('Content-Type', 'image/svg+xml');
+    res.send(svgStroke);
   }
