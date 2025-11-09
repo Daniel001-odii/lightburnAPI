@@ -54,7 +54,7 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         if (req.file.mimetype === 'image/svg+xml') {
             const svgString = inputBuffer.toString('utf8');
             // const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
-            const strokeSVG = convertFillsToStrokes(svgString, "#000000", 16);
+            const strokeSVG = convertFillsToStrokes(svgString, "#000000", 6);
             res.set('Content-Type', 'image/svg+xml');
             return res.send(strokeSVG);
         }
