@@ -62,7 +62,7 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         // Vectorizer expects a file path or a buffer
         let svgString = await vectorize(inputBuffer, options);
 
-        svgString = removeFirstPathElement(svgString);
+        // svgString = removeFirstPathElement(svgString);
         
 
         // const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
