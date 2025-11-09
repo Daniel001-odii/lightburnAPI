@@ -60,7 +60,10 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
         }
 
         // Vectorizer expects a file path or a buffer
-        const svgString = await vectorize(inputBuffer, options);
+        let svgString = await vectorize(inputBuffer, options);
+
+        svgString = removeFirstPathElement(svgString);
+        
 
         // const strokeSVG = convertFillsToStrokes(svgString, "#000000", 3);
 
@@ -74,6 +77,21 @@ export const convertImageToSvg = async (req: Request, res: Response) => {
 };
 
 /**
+ * Removes the first <path> element from an SVG string.
+ */
+export function removeFirstPathElement(svgString: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgString, "image/svg+xml");
+    const paths = doc.getElementsByTagName("path");
+    if (paths.length > 0) {
+        const firstPath = paths.item(0);
+        firstPath?.parentNode?.removeChild(firstPath);
+    }
+    const serializer = new XMLSerializer();
+    return serializer.serializeToString(doc);
+}
+
+/**
  * Converts all fills in the SVG to strokes only,
  * removes gradients, and deletes the first <path> (likely bounding box).
  */
@@ -84,13 +102,6 @@ export function convertFillsToStrokes(
   ) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, "image/svg+xml");
-  
-    // --- 1️⃣ Remove the first <path> element (bounding box or background) ---
-    const paths = doc.getElementsByTagName("path");
-    if (paths.length > 0) {
-      const firstPath = paths.item(0);
-      firstPath?.parentNode?.removeChild(firstPath);
-    }
   
     // --- 2️⃣ Process remaining elements ---
     const allElements = doc.getElementsByTagName("*");
@@ -142,14 +153,7 @@ export function convertFillsToStrokes(
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, "image/svg+xml");
   
-    // --- 1️⃣ Remove the first <path> element (bounding box or background) ---
-    const paths = doc.getElementsByTagName("path");
-    if (paths.length > 0) {
-      const firstPath = paths.item(0);
-      firstPath?.parentNode?.removeChild(firstPath);
-    }
-
-    const svgStroke = convertFillsToStrokes(svgString, "#000000", 3);
+    const svgStroke = convertFillsToStrokes(removeFirstPathElement(svgString), "#000000", 3);
 
     res.set('Content-Type', 'image/svg+xml');
     res.send(svgStroke);
