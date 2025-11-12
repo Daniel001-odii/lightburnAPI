@@ -28,7 +28,7 @@ import { DOMParser, XMLSerializer } from "xmldom";
 const options = {
   colorMode: ColorMode.Color,
   colorPrecision: 4,                 // Fewer colors for more distinct grouping
-  hierarchical: Hierarchical.Stacked,
+  hierarchical: Hierarchical.Cutout,
 
   pathPrecision: 6,                  // Enough detail but fewer nodes
   filterSpeckle: 2,                  // Remove small noise specks
@@ -38,8 +38,9 @@ const options = {
 
   layerDifference: 10,               // Reasonable grouping tolerance
   lengthThreshold: 3,                // Skip ultra-short path segments
-  maxIterations: 5,                  // Smooth, optimized shapes
+  maxIterations: 5,  
 };
+
 
 
 export const convertImageToSvg = async (req: any, res: Response) => {
